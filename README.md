@@ -14,11 +14,39 @@ export default async function handler(req, res) {
             max_tokens: 150
         }, {
             headers: {
-                'Authorization': `Bearer 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`
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`  // استخدام المتغير البيئي
             }
         });
 
-        res.status(200).json({ response: response.data.choices[0].text });
+        // نص الرد
+        const gptResponse = response.data.choices[0].text;
+
+        // HTML لعرض اسم ضفدع متحرك بلون معين
+        const animatedFrogName = `
+            <style>
+                @keyframes colorChange {
+                    0% { color: red; }
+                    25% { color: yellow; }
+                    50% { color: green; }
+                    75% { color: blue; }
+                    100% { color: purple; }
+                }
+                .animated-frog {
+                    font-size: 24px;
+                    font-weight: bold;
+                    animation: colorChange 2s infinite;
+                }
+            </style>
+            <div class="animated-frog">ضفدع</div>
+        `;
+
+        // إرسال الرد مع النص المتحرك
+        res.status(200).send(`
+            <div>
+                <p>${gptResponse}</p>
+                ${animatedFrogName}
+            </div>
+        `);
     } catch (error) {
         res.status(500).json({ error: 'حدث خطأ أثناء جلب الرد' });
     }
